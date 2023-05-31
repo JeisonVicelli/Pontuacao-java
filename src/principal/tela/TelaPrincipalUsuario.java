@@ -16,7 +16,8 @@ public static void mostrar() {
 			System.out.println("[1] " + Mensagem.MENU_CADASTROS);
 			System.out.println("[2] " + Mensagem.MENU_CONTROLE_PEDIDOS);
 			System.out.println("[3] " + Mensagem.MENU_VENDAS);
-			System.out.println("[4] " + Mensagem.MENU_SAIR);
+			System.out.println("[4] " + Mensagem.MENU_CLIENTE);
+			System.out.println("[5] " + Mensagem.MENU_SAIR);
 			
 			Integer opcao = leitor.nextInt();
 			
@@ -33,7 +34,10 @@ public static void mostrar() {
 					TelaVenda.mostrar();                    	
 					break;
 				}
-				case 4: {
+				case 4:{
+					TelaCliente.mostrar();
+				}
+				case 5: {
 					System.out.println();
 					System.out.println(Mensagem.MSG_PROGRAMA_ENCERRADO);	
 					break;
