@@ -1,0 +1,182 @@
+package principal.tela;
+
+import java.util.Scanner;
+
+import principal.controller.CadastroClientes;
+import principal.controller.CadastroProduto;
+import principal.controller.ControlePedidos;
+import principal.db.BancoDeDados;
+import principal.modelo.Cliente;
+import principal.modelo.Pedido;
+import principal.modelo.Produto;
+import principal.util.Mensagem;
+
+public class TelaVendas {
+	
+	
+	public static void mostrar() {
+		
+		
+			System.out.println();
+			
+			System.out.println(Mensagem.TELA_VENDAS);
+
+			Pedido pedido = ControlePedidos.pedido;
+			if (pedido == null) {
+				pedido = new Pedido();
+			} else {
+											
+				if (pedido.cliente != null) {
+					System.out.println(pedido.cliente);
+				}
+				
+				for (Produto produto : pedido.produtos) {
+					System.out.println(produto);
+				}
+				System.out.println();
+			}
+			ControlePedidos.pedido = pedido;
+			try (Scanner leitor = new Scanner(System.in)) {
+			System.out.println(Mensagem.MSG_ESCOLHA);
+			System.out.println("[1] " + Mensagem.MENU_SELECIONAR_CLIENTE);
+			System.out.println("[2] " + Mensagem.MENU_SELECIONAR_PRODUTOS);
+			
+			System.out.println("[3] " + Mensagem.MENU_VOLTAR);
+
+			Integer opcao = leitor.nextInt();
+
+			switch (opcao) {
+				case 1: {
+					TelaVendas.selecionarCliente();
+					break;
+				}
+				case 2: {
+					TelaVendas.selecionarProdutos();
+					break;
+				}
+			
+				case 3: {
+					TelaPrincipalUsuario.mostrar();
+					break;
+				}
+			}
+		}
+	}
+
+	private static void selecionarCliente() {
+
+		System.out.println();
+		System.out.println(Mensagem.MSG_LISTA_DE_CLIENTES);
+
+		if (BancoDeDados.clientes.isEmpty()) {
+			System.out.println(Mensagem.MSG_NENHUM_CLIENTE);
+		} else {
+			for (Cliente cliente : BancoDeDados.clientes) {
+				System.out.println(cliente);
+			}
+		}
+
+		System.out.println();
+		try (Scanner leitor1 = new Scanner(System.in)) {
+			System.out.println(Mensagem.MSG_INFORME_NOME);
+			String nome = leitor1.nextLine();
+
+			if (!nome.isEmpty()) {
+				Cliente cliente = CadastroClientes.localizar(nome);
+
+				System.out.println();
+				if (cliente != null) {
+					ControlePedidos.pedido.cliente = cliente;
+					System.out.println(Mensagem.MSG_CLIENTE_SELECIONADO);
+				} else {
+					System.out.println();
+					System.out.println(Mensagem.MSG_CLIENTE_NAO_ENCONTRADO);
+				}
+				System.out.println();
+				try (Scanner entrada = new Scanner(System.in)) {
+					String input;
+					
+					
+					do {
+					    System.out.print("Pressione Enter para continuar: ");
+					    input = entrada.nextLine();
+
+					    if (!input.isEmpty()) {
+					        System.out.println("Erro: entrada inválida!");
+					    }
+					} while (!input.isEmpty());
+					TelaVendas.mostrar();
+			}
+			
+}
+		}
+	}
+	private static void selecionarProdutos() {
+	    System.out.println();
+	    System.out.println(Mensagem.MSG_LISTA_DE_PRODUTOS);
+
+	    if (BancoDeDados.produtos.isEmpty()) {
+	        System.out.println(Mensagem.MSG_NENHUM_PRODUTO);
+	    } else {
+	        BancoDeDados.produtos.forEach(System.out::println);
+	    }
+
+	    boolean continuarComprando = true;
+	    try (Scanner leitor2 = new Scanner(System.in)) {
+	        while (continuarComprando) {
+	            System.out.println();
+	            System.out.println(Mensagem.MSG_INFORME_NOME);
+	            String nome = leitor2.nextLine();
+
+	            if (!nome.isEmpty()) {
+	                Produto produto = CadastroProduto.localizar(nome);
+
+	                if (produto == null) {
+	                    System.out.println();
+	                    System.out.println("Produto não encontrado.");
+	                } else {
+	                    ControlePedidos.adicionar(produto);
+	                    System.out.println(Mensagem.MSG_PRODUTO_SELECIONADO);
+	                }
+
+	                System.out.println("Deseja adicionar mais produtos? (s/n)");
+	                String resposta = leitor2.nextLine();
+	                if (!resposta.equalsIgnoreCase("s")) {
+	                    continuarComprando = false;
+	                }
+	            }
+	        }
+
+	        
+	            for (Pedido pedido : BancoDeDados.pedidos) {
+	                System.out.println(pedido.toString());
+	            }
+
+	            if (BancoDeDados.pedidos.isEmpty()) {
+	                System.out.println("Carrinho vazio.");
+	            } else {
+	                double total = 0.0;
+	                for (Pedido pedido : BancoDeDados.pedidos) {
+	                    total += pedido.total();
+	                }
+	                System.out.println("Valor total da compra: R$" + total);
+
+	                try (Scanner leitor3 = new Scanner(System.in)) {
+	                    System.out.println("Deseja confirmar a compra? (s/n)");
+	                    String confirmacao = leitor3.nextLine();
+
+	                    if (confirmacao.equalsIgnoreCase("s")) {
+	                        System.out.println("Compra finalizada com sucesso.");
+	                    }
+	                }
+
+	              
+	                // Cálculo dos pontos
+	                int pontos = (int) Math.floor(total / 10); // Para cada 10 reais gastos, o cliente ganha 1 ponto
+	                System.out.println("O valor de R$" + total + " equivale a " + pontos + " pontos.");
+	            }
+	        }
+	    }
+	}
+
+	

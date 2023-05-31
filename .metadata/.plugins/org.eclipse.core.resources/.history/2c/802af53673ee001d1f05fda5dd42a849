@@ -1,0 +1,54 @@
+package principal.modelo;
+
+
+import java.util.ArrayList;
+import java.util.List;
+
+import principal.controller.ControleLogin;
+import principal.controller.ControlePedidos;
+
+public class Pedido {
+	
+	
+	public Integer id;
+	public double total;
+	public Usuario vendedor;
+	public Cliente cliente;
+	public List<Produto> produtos;
+	public int ponto;
+	
+	public Pedido() {
+		this.id = ControlePedidos.getNovoId();
+		this.vendedor = ControleLogin.usuarioLogado;
+		this.produtos = new ArrayList<>();
+		this.total = 0;
+		this.ponto = 0;
+	}
+	
+	public Pedido(Integer id, Usuario vendedor) {
+		this();
+		this.id = id;
+		this.vendedor = vendedor;
+	}	
+	
+		
+	public void adicionar(Produto produto) {
+		this.total += produto.valor;
+		this.produtos.add(produto);
+	}
+	
+	public void remover(Produto produto) {
+		this.total -= produto.valor;
+		this.produtos.remove(produto);
+	}
+	
+	@Override
+	public String toString() {
+		return "Pedido {codigo = "+ id + "," + "," + ", total = " + total 
+				+ ", " + vendedor 
+				+ ", " + cliente
+				+ ", " + produtos 
+				+ ", " + ponto;
+	}
+
+}
